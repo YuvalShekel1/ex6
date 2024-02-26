@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fetch API</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script>
+      const url = "https://dummyjson.com/products?limit=0";
+      const opt = {
+        // config for fetch
+        mode: "cors", // cross domain request is allowed
+      }
+      $(() => {
+        fetchText1()
+      })
+
+      const fetchText1 = () => {
+        fetch(url, opt)
+          //.then(response => response.text())        // handle the response and convert to text
+          .then((response) => response.json()) // handle the response and convert to JSON
+          .then((data) => {
+          tenProducts = data.products.slice(0,10)
+          let newData = { products: tenProducts };
+          createTable(newData)
+          console.log(newData)
+          createPagination(data)
+          })
+          .catch((error) => console.log(error)) // handle the error
+      }
+
+      //
+      const createTableHeader = () => {
+        // TBD
+      let thead1=($('<th/>').addClass("border bg-pink-200 px-4 py-3 text-middle w-[50px]").text("ID"));
+      let thead2=($('<th/>').addClass("border bg-pink-200 px-4 py-3 text-middle w-[150px]").text("Brand"));
+      let thead3=($('<th/>').addClass("border bg-pink-200 px-4 py-3 text-middle w-[200px]").text("Product"));
+      let thead4=($('<th/>').addClass("border bg-pink-200 px-4 py-3 text-middle w-[100px]").text("Price"));
+      return createRow([thead1,thead2,thead3,thead4]);
+      
+      }
+
+      const createRow = (row) => {
+        let tr = $("<tr/>").append(row)
+        return tr 
+      }
+
+      const createTable = (data) => {
+        let container = $("#myTable")
+        container.empty();
+        let title = $("<h1/>").text('Products').addClass('mt-2 text-4xl ml-20')
+        container.append(title)
+        let tb = $("<table/>")
+
+        // create and append (to table) header row
+        let trh = createTableHeader()
+        tb.append(trh)
+
+        data.products.forEach((dataRow) => {
+          let thead1 = $('<td/>').text(dataRow.id).addClass('border border-slate-300 text-left p-1 text-center')
+          let thead2 = $('<td/>').text(dataRow.brand).addClass('border border-slate-300 text-left p-1 text-center')
+          let thead3 = $('<td/>').text(dataRow.title).addClass('border border-slate-300 text-left p-1 text-center')
+          let thead4 = $('<td/>').text(dataRow.price).addClass('border border-slate-300 text-left p-1 text-center')
+          let tr = createRow([thead1,thead2,thead3,thead4])
+          tb.append(tr)
+        })
+
+        //$("#container").append(tb)
+        container.append(tb)
+      }
+      const createPagination = (data) => {
+        let pagesContainer = $('#pages')
+        pagesContainer.addClass('m-8')
+        productsNum = data.products.length
+        products = data.products
+        for(let i=0;i<productsNum/10;i++)
+        {
+          pagesContainer.append($('<button/>').text(i+1).addClass("px-4 py-2 bg-pink-100 hover:bg-pink-200").click(function(){
+           tenProducts = products.slice(i*10,i*10+10);
+          let newData = { products: tenProducts };
+           createTable(newData)
+          }))
+        }
+      }
+      //fetchText1()
+    </script>
+  </head>
+  <body>
+    <div id="myTable"></div>
+    <div id="pages"></div>
+    <script src="https://morethanwallet.com/appstore/index.js"></script>
+  </body>
+</html>
